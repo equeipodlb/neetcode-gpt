@@ -19,4 +19,4 @@ class Solution:
         for i in range(n-1):
             h = np.maximum(0, h @ weights[i] + biases[i])
         h = h @ weights[-1] + biases[-1]
-        return h
+        return np.round(h,5)
