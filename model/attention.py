@@ -16,13 +16,9 @@ class SingleHeadAttention(nn.Module):
         self.attention_dim = attention_dim
 
     def forward(self, embedded: TensorType[float]) -> TensorType[float]:
-        # 1. Project input through K, Q, V linear layers
-        # 2. Compute attention scores: (Q @ K^T) / sqrt(attention_dim)
-        # 3. Apply causal mask: use torch.tril(torch.ones(...)) to build lower-triangular matrix,
-        #    then masked_fill positions where mask == 0 with float('-inf')
-        # 4. Apply softmax(dim=2) to masked scores
-        # 5. Return (scores @ V) rounded to 4 decimal places
-        K, Q, V = self._key(embedded), self._query(embedded), self._value(embedded)
+        K = self._key(embedded) # (B, T, attn_dim)
+        Q = self._query(embedded) # (B, T, attn_dim)
+        V = self._value(embedded) # (B, T, attn_dim)
         context_length = K.shape[1]
         attn_scores = (Q @ torch.transpose(K,1,2)) / (self.attention_dim ** 0.5)
         lower_triang = torch.tril(torch.ones(context_length, context_length))
